@@ -1,70 +1,65 @@
-<template> 
-    <div class="productos-page">
-        <h1> Productos de Ferremas</h1>
+<template>
+  <div class="productos-page">
+    <h1>Productos de FerreMas</h1>
 
-        <div v-if="loading">
-            <p>Cargando productos...</p>
-        </div>
-
-        <div v-else-if="error">
-            <p>Error al cargar los productos:{{ console.error(fallo mi negro)
-             }}</p>
-
-        </div>
-
-        <div v-else class="productos-grid">
-            <div v-for="producto in productos" :key="producto.id" class="producto-card">
-                <img :src="producto.imagen" :alt="producto.nombre" class="producto-imagen">
-                <h3>{{ producto.nombre }}</h3>
-                <p class="producto-descripcion">{{ producto.descripcion }}</p>
-                <p class="producto-precio">Precio: ${{ producto.precio }}</p>
-                <button @click="agregarAlCarrito(producto)" class="producto-boton">Agregar al carrito</button>
-            </div>
-        </div>
+    <div v-if="loading">
+      <p>Cargando productos...</p>
     </div>
+
+    <div v-else-if="error">
+      <p>Error al cargar los productos: {{ error }}</p>
+    </div>
+
+    <div v-else class="productos-grid">
+      <div v-for="producto in productos" :key="producto.id" class="producto-card">
+        <img :src="producto.imagen" :alt="producto.nombre" class="producto-imagen">
+        <h3>{{ producto.nombre }}</h3>
+        <p class="producto-descripcion">{{ producto.descripcion }}</p>
+        <p class="producto-precio">Precio: ${{ producto.precio }}</p>
+        <button @click="addToCart(producto)" class="producto-boton">Agregar al carrito</button>
+      </div>
+    </div>
+  </div>
 </template>
 
-<script>
-import axios from 'axios'; // Necesitas instalar axios: npm install axios
+<script setup>
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import { useCartStore } from '../stores/cart'; // Importa tu store de Pinia
 
-export default {
-  name: 'ProductosView',
-  data() {
-    return {
-      productos: [],
-      loading: true,
-      error: null
-    };
-  },
-  mounted() {
-    this.cargarProductos();
-  },
-  methods: {
-    async cargarProductos() {
-      this.loading = true;
-      this.error = null;
-      try {
-        // Reemplaza esto con la URL real de tu API o fuente de datos
-        const response = await axios.get('URL_DE_TU_API_DE_PRODUCTOS');
-        this.productos = response.data;
-      } catch (err) {
-        this.error = err.message || 'Error desconocido al cargar productos';
-      } finally {
-        this.loading = false;
-      }
-    },
-    agregarAlCarrito(producto) {
-      // Aquí iría la lógica para agregar el producto al carrito
-      // (puedes usar Vuex o emitir un evento al componente padre)
-      console.log(`Producto "${producto.nombre}" agregado al carrito.`);
-      alert(`Producto "${producto.nombre}" agregado al carrito.`);
-    }
+// Inicializa el store
+const cartStore = useCartStore();
+
+const productos = ref([]);
+const loading = ref(true);
+const error = ref(null);
+
+async function cargarProductos() {
+  loading.value = true;
+  error.value = null;
+  try {
+    const response = await axios.get('URL_DE_TU_API_DE_PRODUCTOS'); // ¡Actualiza tu URL!
+    productos.value = response.data;
+  } catch (err) {
+    error.value = err.message || 'Error desconocido al cargar productos';
+  } finally {
+    loading.value = false;
   }
-};
+}
+
+function addToCart(producto) {
+  cartStore.addItem(producto); // Llama a la acción addItem del store
+  alert(`"${producto.nombre}" agregado al carrito. Cantidad total en carrito: ${cartStore.cartTotalUnits}`);
+}
+
+onMounted(() => {
+  cartStore.loadCartFromLocalStorage(); // Carga el carrito al iniciar la app/componente
+  cargarProductos();
+});
 </script>
 
 <style scoped>
-/* Estilos para la página de productos */
+/* Tus estilos existentes para productos */
 .productos-page {
   font-family: 'Arial', sans-serif;
   color: #333;
