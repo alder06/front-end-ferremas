@@ -2,15 +2,29 @@ import { createRouter, createWebHistory } from "vue-router";
 import UserView from "../views/userView.vue";
 import CompraView from "../views/compraView.vue";
 import ResultadoPagoView from "../views/ResultadoPagoView.vue";
+import HomeView from "../views/homeView.vue"; // Usar "HomeView" con H mayúscula es una convención
 
 const routes = [
-  { path: "/", name: "Usuarios", component: UserView },
-  { path: "/compra", name: "Compra", component: CompraView },
+  {
+    path: "/",
+    name: "Home",
+    component: HomeView // Esta será tu página de inicio principal
+  },
+  {
+    path: "/usuarios", // <--- CAMBIO IMPORTANTE: Nueva ruta para los usuarios
+    name: "Usuarios",
+    component: UserView
+  },
+  {
+    path: "/compra",
+    name: "Compra",
+    component: CompraView
+  },
   {
     path: "/resultado-pago",
     name: "ResultadoPago",
-    component: ResultadoPagoView,
-  },
+    component: ResultadoPagoView
+  }
 ];
 
 export default createRouter({
