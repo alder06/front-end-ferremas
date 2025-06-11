@@ -40,7 +40,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '../stores/auth'; // Importa tu store de autenticación (lo crearemos en el paso 3)
+import { useAuthStore } from '../services/auth'; // Importa tu store de autenticación (lo crearemos en el paso 3)
 
 const email = ref('');
 const password = ref('');

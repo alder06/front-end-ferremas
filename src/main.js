@@ -3,7 +3,7 @@ import App from "./App.vue";
 import router from "./router";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { createPinia } from 'pinia'; // Importa createPinia
-import { useAuthStore } from './stores/auth';
+import { useAuthStore } from './services/auth';
 
 const app = createApp(App);
 const pinia = createPinia(); // Crea una instancia de Pinia

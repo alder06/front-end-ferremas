@@ -25,7 +25,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import { useCartStore } from '../stores/cart'; // Importa tu store de Pinia
+import { useCartStore } from '../services/cart'; // Importa tu store de Pinia
 
 // Inicializa el store
 const cartStore = useCartStore();

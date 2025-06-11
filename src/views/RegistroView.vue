@@ -63,7 +63,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '../stores/auth'; // Tu store de autenticación
+import { useAuthStore } from '../services/auth'; // Tu store de autenticación
 
 const name = ref('');
 const email = ref('');

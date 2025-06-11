@@ -25,8 +25,8 @@
 </template>
 
 <script setup>
-import { useCartStore } from './stores/cart';
-import { useAuthStore } from './stores/auth'; // Importa el store de autenticación
+import { useCartStore } from './services/cart';
+import { useAuthStore } from './services/auth'; // Importa el store de autenticación
 import { useRouter } from 'vue-router';
 
 const cartStore = useCartStore();
