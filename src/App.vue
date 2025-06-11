@@ -10,6 +10,8 @@
       <router-link to="/usuarios" class="btn btn-outline-primary me-2">Usuarios</router-link>
 
       <router-link to="/compra" class="btn btn-outline-success">Simular Compra</router-link>
+
+      <router-link to="/productos" class="btn btn-outline-info">Productos </router-link>
     </nav>
     <router-view />
   </div>
