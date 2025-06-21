@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import axios from 'axios'; // Necesitas instalar axios: npm install axios
+import axios from 'axios'; 
 
 // URL base de tu API de backend para autenticación
 const AUTH_API_URL = 'http://localhost:3000/api/auth'; // ¡CAMBIA ESTO POR LA URL REAL DE TU BACKEND!

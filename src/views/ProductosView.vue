@@ -38,7 +38,7 @@ async function cargarProductos() {
   loading.value = true;
   error.value = null;
   try {
-    const response = await axios.get('URL_DE_TU_API_DE_PRODUCTOS'); // ¡Actualiza tu URL!
+    const response = await axios.get(''); // ¡Actualiza tu URL!
     productos.value = response.data;
   } catch (err) {
     error.value = err.message || 'Error desconocido al cargar productos';

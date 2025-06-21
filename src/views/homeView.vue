@@ -1,4 +1,5 @@
 <template>
+  <div> <Navbar /> 
   <div class="home-page">
     <header class="hero-section">
       <div class="hero-content">
@@ -54,9 +55,11 @@
       </div>
     </footer>
   </div>
+  </div>
 </template>
 
 <script>
+  import Navbar from '@/components/Navbar.vue';
 export default {
   name: 'HomePage', // Nombre del componente (útil para depuración)
   data() {

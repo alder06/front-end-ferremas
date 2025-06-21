@@ -1,20 +1,23 @@
+// src/router/index.js
 import { createRouter, createWebHistory } from "vue-router";
+
+import HomeView from "../views/homeView.vue";
 import UserView from "../views/userView.vue";
 import CompraView from "../views/compraView.vue";
 import ResultadoPagoView from "../views/ResultadoPagoView.vue";
-import HomeView from "../views/homeView.vue"; // Usar "HomeView" con H mayúscula es una convención
-import ProductosView from "@/views/ProductosView.vue";
-import LoginView from "@/views/loginView.vue";
-import RegistroView from "../views/RegistroView.vue";
+import ProductosView from "../views/productosView.vue";
+import LoginView from "../views/loginView.vue";
+import RegistroView from "../views/registroView.vue";
+import CarritoView from "../views/carritoView.vue";
 
 const routes = [
   {
     path: "/",
     name: "Home",
-    component: HomeView // Esta será tu página de inicio principal
+    component: HomeView
   },
   {
-    path: "/usuarios", // <--- CAMBIO IMPORTANTE: Nueva ruta para los usuarios
+    path: "/usuarios",
     name: "Usuarios",
     component: UserView
   },
@@ -29,12 +32,12 @@ const routes = [
     component: ResultadoPagoView
   },
   {
-    path: "/productos", // <-- Nueva ruta para la página de productos
+    path: "/productos",
     name: "Productos",
     component: ProductosView
   },
   {
-    path:"/login",
+    path: "/login",
     name: "Login",
     component: LoginView
   },
@@ -42,11 +45,15 @@ const routes = [
     path: "/registrar",
     name: "Registrar",
     component: RegistroView
+  },
+  {
+    path: "/carrito",
+    name: "Carrito de compra",
+    component: CarritoView
   }
 ];
 
-
 export default createRouter({
   history: createWebHistory(),
-  routes,
+  routes
 });
