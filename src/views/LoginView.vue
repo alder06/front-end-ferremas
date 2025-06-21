@@ -31,7 +31,7 @@
         </div>
       </form>
       <p class="mt-3">
-        ¿No tienes cuenta? <router-link to="/register">Regístrate aquí</router-link>
+        ¿No tienes cuenta? <router-link to="/registrar">Regístrate aquí</router-link>
       </p>
     </div>
   </div>

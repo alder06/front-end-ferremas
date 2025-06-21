@@ -1,51 +1,114 @@
 <!-- src/views/CarritoView.vue -->
 <template>
-  <div class="p-6">
-    <h1 class="text-2xl font-bold mb-4">Tu Carrito</h1>
+  <div class="container py-5">
+    <h1 class="mb-4">Tu Carrito</h1>
 
-    <div v-if="cart.items.length === 0">
-      <p>El carrito está vacío.</p>
+    <div v-if="!cart.items.length" class="alert alert-info">
+      Tu carrito está vacío.
     </div>
 
-    <div v-else>
-      <table class="w-full text-left mb-6">
-        <thead>
-          <tr>
-            <th>Producto</th>
-            <th>Cantidad</th>
-            <th>Precio</th>
-            <th>Total</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in cart.items" :key="item.id">
-            <td>{{ item.nombre }}</td>
-            <td>
-              <input type="number" v-model.number="item.cantidad" @change="actualizarCantidad(item.id, item.cantidad)" class="w-16 p-1 border rounded" />
-            </td>
-            <td>${{ item.precio }}</td>
-            <td>${{ item.precio * item.cantidad }}</td>
-            <td>
-              <button @click="cart.removeItem(item.id)" class="text-red-600">Eliminar</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div v-else class="row">
+      <!-- Listado de productos en carrito -->
+      <div class="col-lg-8">
+        <div
+          v-for="item in cart.items"
+          :key="item.id"
+          class="card mb-3 shadow-sm"
+        >
+          <div class="row g-0 align-items-center">
+            <div class="col-md-3">
+              <img
+                :src="item.imagen || 'https://via.placeholder.com/150'"
+                class="img-fluid rounded-start"
+                alt="Imagen del producto"
+              />
+            </div>
+            <div class="col-md-6">
+              <div class="card-body">
+                <h5 class="card-title">{{ item.nombre }}</h5>
+                <p class="card-text text-muted">
+                  Precio unitario: ${{ item.precio }}
+                </p>
+                <div class="input-group input-group-sm w-50">
+                  <button
+                    class="btn btn-outline-secondary"
+                    @click="decrement(item)"
+                  >−</button>
+                  <input
+                    type="text"
+                    class="form-control text-center"
+                    :value="item.cantidad"
+                    readonly
+                  />
+                  <button
+                    class="btn btn-outline-secondary"
+                    @click="increment(item)"
+                  >+</button>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 text-center">
+              <div class="card-body">
+                <p class="h5">$ {{ item.precio * item.cantidad }}</p>
+                <button
+                  class="btn btn-sm btn-outline-danger"
+                  @click="cart.removeItem(item.id)"
+                >
+                  🗑️ Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <p class="text-xl font-semibold">Total: ${{ cart.cartTotalPrice }}</p>
-
-      <button @click="cart.clearCart()" class="mt-4 bg-red-600 text-white px-4 py-2 rounded">Vaciar Carrito</button>
+      <!-- Resumen de la orden -->
+      <div class="col-lg-4">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h4 class="card-title">Resumen</h4>
+            <ul class="list-group list-group-flush mb-3">
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Unidades</span>
+                <strong>{{ cart.cartTotalUnits }}</strong>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Subtotal</span>
+                <strong>$ {{ cart.cartTotalPrice }}</strong>
+              </li>
+            </ul>
+            <!-- Botón para ir a la vista de compra -->
+            <router-link
+              to="/compra"
+              class="btn btn-primary w-100 mb-2"
+            >
+              🛒 Ir a pagar
+            </router-link>
+            <button
+              class="btn btn-outline-secondary w-100"
+              :disabled="!cart.items.length"
+              @click="cart.clearCart()"
+            >
+              Vaciar carrito
+            </button>
+            <router-link to="/productos" class="btn btn-link w-100 mt-3">
+              ← Seguir comprando
+            </router-link>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { useCartStore } from '@/services/cart'
+import { useRouter } from 'vue-router'
 
 const cart = useCartStore()
+const router = useRouter()
 
-const actualizarCantidad = (id, cantidad) => {
-  cart.updateItemQuantity(id, cantidad)
-}
+// Funciones para cambiar cantidad
+const increment = item => cart.addItem(item, 1)
+const decrement = item => cart.updateItemQuantity(item.id, item.cantidad - 1)
 </script>

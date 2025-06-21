@@ -43,6 +43,17 @@
             placeholder="Repite tu contraseña"
           />
         </div>
+        <div class="form-group">
+          <label for="role">Tipo de Usuario:</label>
+          <select id="role" v-model="role" required>
+            <option value="" disabled>Selecciona un tipo</option>
+            <option value="cliente">Cliente</option>
+            <option value="vendedor">Vendedor</option>
+            <option value="admin">Administrador</option>
+            <option value="contador">Contador</option>
+            <option value="bodeguero">Bodeguero</option>
+          </select>
+        </div>
         <button type="submit" :disabled="loading" class="btn primary-btn">
           {{ loading ? 'Registrando...' : 'Registrar' }}
         </button>
@@ -69,6 +80,7 @@ const name = ref('');
 const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
+const role = ref('');
 const loading = ref(false);
 const error = ref(null);
 const successMessage = ref(null);
@@ -78,8 +90,8 @@ const authStore = useAuthStore();
 
 const handleRegister = async () => {
   loading.value = true;
-  error.value = null; // Reiniciar errores anteriores
-  successMessage.value = null; // Reiniciar mensajes de éxito
+  error.value = null;
+  successMessage.value = null;
 
   // Validaciones básicas en el frontend
   if (password.value !== confirmPassword.value) {
@@ -94,20 +106,29 @@ const handleRegister = async () => {
     return;
   }
 
+  if (!role.value) {
+    error.value = 'Debes seleccionar un tipo de usuario.';
+    loading.value = false;
+    return;
+  }
+
   try {
     // Llama a la acción register del store de autenticación
-    await authStore.register(name.value, email.value, password.value);
+    await authStore.register({
+      name: name.value,
+      email: email.value,
+      password: password.value,
+      role: role.value
+    });
 
     successMessage.value = '¡Registro exitoso! Ahora puedes iniciar sesión.';
-    // Opcional: Redirigir al usuario al login después de un breve retraso
     setTimeout(() => {
       router.push('/login');
     }, 2000);
 
   } catch (err) {
-    // Manejar errores de registro
     if (err.response && err.response.data && err.response.data.message) {
-      error.value = err.response.data.message; // Mensaje de error desde el backend
+      error.value = err.response.data.message;
     } else {
       error.value = 'Ocurrió un error al registrar el usuario. Inténtalo de nuevo.';
     }
@@ -122,7 +143,7 @@ const handleRegister = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 100px); /* Ajusta para que ocupe casi toda la pantalla */
+  min-height: calc(100vh - 100px);
   background-color: #f0f2f5;
   padding: 20px;
 }
@@ -133,7 +154,7 @@ const handleRegister = async () => {
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 450px; /* Un poco más ancho que el login */
+  max-width: 450px;
   text-align: center;
 }
 
@@ -155,7 +176,8 @@ h1 {
   color: #333;
 }
 
-.form-group input {
+.form-group input,
+.form-group select {
   width: 100%;
   padding: 12px;
   border: 1px solid #ced4da;
@@ -163,7 +185,8 @@ h1 {
   font-size: 1em;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
   border-color: #007bff;
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
   outline: none;
@@ -181,7 +204,7 @@ h1 {
 }
 
 .primary-btn {
-  background-color: #28a745; /* Color verde para registrar */
+  background-color: #28a745;
   color: white;
   border: none;
 }
@@ -191,7 +214,7 @@ h1 {
 }
 
 .primary-btn:disabled {
-  background-color: #90ee90; /* Verde más claro cuando está deshabilitado */
+  background-color: #90ee90;
   cursor: not-allowed;
 }
 

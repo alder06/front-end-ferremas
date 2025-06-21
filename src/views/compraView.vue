@@ -1,37 +1,60 @@
+<!-- src/views/CompraView.vue -->
 <template>
-  <div class="card card-body shadow p-4">
-    <h2 class="mb-4">Simulación de pago con Webpay</h2>
-    <form @submit.prevent="redirigirWebpay">
-      <div class="mb-3">
-        <label class="form-label">Monto</label>
-        <input v-model="amount" type="number" class="form-control" required />
-      </div>
-      <button class="btn btn-success">Pagar ahora</button>
-    </form>
+  <div class="container py-5">
+    <h1 class="mb-4">Confirmar Compra</h1>
+
+    <div v-if="!cart.items.length" class="alert alert-info">
+      Tu carrito está vacío.
+      <router-link to="/productos" class="btn btn-link">Volver a productos</router-link>
+    </div>
+
+    <div v-else>
+      <ul class="list-group mb-4">
+        <li
+          v-for="item in cart.items"
+          :key="item.id"
+          class="list-group-item d-flex justify-content-between"
+        >
+          <span>{{ item.nombre }} × {{ item.cantidad }}</span>
+          <strong>$ {{ item.precio * item.cantidad }}</strong>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span>Total</span>
+          <strong>$ {{ cart.cartTotalPrice }}</strong>
+        </li>
+      </ul>
+
+      <button
+        @click="startWebpay"
+        :disabled="loading"
+        class="btn btn-primary btn-lg"
+      >
+        {{ loading ? 'Redirigiendo…' : 'Pagar con Webpay' }}
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup>
-  import { ref } from "vue";
+import { ref } from 'vue'
+import { useCartStore } from '@/services/cart'
+import axios from 'axios'
 
-  // Variables de entorno
-  const token = "SIMULATED_TOKEN_WS"; // token fijo o simulado por backend
-  const webpayFormUrl = import.meta.env.VITE_TBK_FORM_URL;
+const cart = useCartStore()
+const loading = ref(false)
 
-  const amount = ref(10000);
-
-  function redirigirWebpay() {
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = webpayFormUrl;
-
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.name = "token_ws";
-    input.value = token;
-    form.appendChild(input);
-
-    document.body.appendChild(form);
-    form.submit();
+const startWebpay = async () => {
+  loading.value = true
+  try {
+    const { data } = await axios.post('/api/payments/create-webpay-transaction', {
+      items: cart.items
+    })
+    // Transbank devuelve { url, token }
+    window.location.href = data.url // Redirige al host de Webpay
+  } catch (err) {
+    console.error(err)
+    alert('Error al iniciar Webpay')
+    loading.value = false
   }
+}
 </script>
