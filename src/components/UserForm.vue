@@ -7,7 +7,7 @@
       <div class="col-md-4">
         <input
           class="form-control"
-          v-model="user.rut"
+          v-model="user.run"
           placeholder="RUT"
           required
         />
@@ -15,40 +15,63 @@
       <div class="col-md-4">
         <input
           class="form-control"
-          v-model="user.nombre"
-          placeholder="Nombre"
+          v-model="user.user_first_name"
+          placeholder="Primer Nombre"
           required
         />
       </div>
       <div class="col-md-4">
         <input
           class="form-control"
-          v-model="user.apellido"
-          placeholder="Apellido"
+          v-model="user.user_sec_name"
+          placeholder="Segundo Nombre"
           required
         />
       </div>
       <div class="col-md-6">
         <input
           class="form-control"
-          v-model="user.direccion"
-          placeholder="Dirección"
+          v-model="user.user_first_surname"
+          placeholder="Primer Apellido"
         />
       </div>
       <div class="col-md-6">
         <input
           class="form-control"
-          v-model="user.fono"
-          placeholder="Teléfono"
+          v-model="user.user_sec_surname"
+          placeholder="Segundo Apellido"
         />
       </div>
       <div class="col-md-6">
         <input
           class="form-control"
-          v-model="user.fecha_nacimiemto"
-          type="date"
+          v-model="user.user_email"
+          type="email"
+          placeholder="Correo Electrónico"
           required
         />
+      </div>
+      <div class="col-md-6">
+        <input
+          class="form-control"
+          v-model="user.user_password"
+          type="password"
+          placeholder="Contraseña"
+          required
+        />
+      </div>
+      <div class="col-md-6">
+        <label for="roleSelect" class="form-label">Rol</label>
+        <select
+          id="roleSelect"
+          class="form-select"
+          v-model="user.role"
+          required
+        >
+          <option disabled value="">Selecciona un rol</option>
+          <option value="1">Administrador</option>
+          <option value="2">Vendedor</option>
+        </select>
       </div>
       <div class="col-md-6 d-flex align-items-end">
         <button class="btn btn-primary w-100" type="submit">
@@ -56,6 +79,7 @@
         </button>
       </div>
     </div>
+  
   </form>
 </template>
 
@@ -65,37 +89,41 @@
   const emit = defineEmits(["submit"]);
 
   const user = ref({
-    rut: "",
-    nombre: "",
-    apellido: "",
-    direccion: "",
-    fono: "",
-    fecha_nacimiemto: "",
+    user_run: "",
+    user_first_name: "",
+    user_sec_name: "",
+    user_first_surname: "",
+    user_sec_surname: "",
+    user_email: "",
+    user_password: "",
+    role: "",
   });
 
-  watch(
-    () => props.modelValue,
-    (newVal) => {
-      if (newVal) {
-        user.value = { ...newVal };
-        if (user.value.fecha_nacimiemto) {
-          user.value.fecha_nacimiemto =
-            user.value.fecha_nacimiemto.split("T")[0];
-        }
-      }
-    },
-    { immediate: true }
-  );
+  // watch(
+  //   () => props.modelValue,
+  //   (newVal) => {
+  //     if (newVal) {
+  //       user.value = { ...newVal };
+  //       if (user.value.fecha_nacimiemto) {
+  //         user.value.fecha_nacimiemto =
+  //           user.value.fecha_nacimiemto.split("T")[0];
+  //       }
+  //     }
+  //   },
+  //   { immediate: true }
+  // );
 
   function handleSubmit() {
-    emit("submit", { ...user.value });
-    user.value = {
-      rut: "",
-      nombre: "",
-      apellido: "",
-      direccion: "",
-      fono: "",
-      fecha_nacimiemto: "",
-    };
-  }
+  emit("submit", { ...user.value });
+  user.value = {
+    user_run: "",
+    user_first_name: "",
+    user_sec_name: "",
+    user_first_surname: "",
+    user_sec_surname: "",
+    user_email: "",
+    user_password: "",
+    role: "",
+  };
+}
 </script>

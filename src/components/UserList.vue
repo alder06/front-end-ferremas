@@ -3,21 +3,24 @@
     <thead class="table-dark">
       <tr>
         <th>RUT</th>
-        <th>Nombre</th>
-        <th>Apellido</th>
-        <th>Dirección</th>
-        <th>Fono</th>
-        <th>Fecha Nacimiento</th>
+        <th>P.Nombre</th>
+        <th>S.Nombre</th>
+        <th>P.Apellido</th>
+        <th>S.Apellido</th>
+        <th>Correo</th>
+        <th>Rol</th>
         <th>Acciones</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="user in users" :key="user.id">
-        <td>{{ user.rut }}</td>
-        <td>{{ user.nombre }}</td>
-        <td>{{ user.apellido }}</td>
-        <td>{{ user.direccion }}</td>
-        <td>{{ user.fono }}</td>
+        <td>{{ user.user_run }}</td>
+        <td>{{ user.user_first_name}}</td>
+        <td>{{ user.user_sec_name}}</td>
+        <td>{{ user.user_first_surname}}</td>
+        <td>{{ user.user_sec_surname}}</td>
+        <td>{{ user.user_email}}</td>
+        <td>{{ user.role}}</td>
         <td>{{ new Date(user.fecha_nacimiemto).toLocaleDateString() }}</td>
         <td>
           <button
