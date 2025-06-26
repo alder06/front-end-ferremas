@@ -1,64 +1,67 @@
 import { defineStore } from 'pinia';
-import axios from 'axios'; 
+import axios from 'axios';
 
-// URL base de tu API de backend para autenticación
-const AUTH_API_URL = 'http://localhost:3000/api/auth'; // ¡CAMBIA ESTO POR LA URL REAL DE TU BACKEND!
+const AUTH_API_URL = 'http://127.0.0.1:8000/api';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: JSON.parse(localStorage.getItem('user')) || null, // Guarda info del usuario
-    token: localStorage.getItem('token') || null, // Guarda el JWT
-    isAuthenticated: !!localStorage.getItem('token'), // Booleano para saber si está logueado
-  }),
-  actions: {
-    async login(email, password) {
+    user: (() => {
       try {
-        const response = await axios.post(`${AUTH_API_URL}/login`, { email, password });
-        const { user, token } = response.data;
+        const storedUser = localStorage.getItem('user');
+        return storedUser ? JSON.parse(storedUser) : null;
+      } catch {
+        return null;
+      }
+    })(),
+    isAuthenticated: !!localStorage.getItem('user'),
+  }),
 
-        // Guarda el token y la información del usuario en el estado y en LocalStorage
+  getters: {
+    clientId: (state) => state.user?.client_id || null,
+  },
+
+  actions: {
+    async loginFuncionario(email, password) {
+      try {
+        const response = await axios.post(`${AUTH_API_URL}/login/user/`, { email, password });
+        const { user } = response.data;
         this.user = user;
-        this.token = token;
         this.isAuthenticated = true;
         localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('token', token);
-
-        // Configura el token en los headers por defecto de Axios para futuras peticiones
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-        return true; // Login exitoso
+        return true;
       } catch (error) {
-        this.logout(); // Limpia el estado si el login falla
-        throw error; // Lanza el error para que el componente de login lo maneje
+        this.logout();
+        throw error;
       }
     },
 
-    async register(name, email, password) {
+    async loginCliente(email, password) {
       try {
-        const response = await axios.post(`${AUTH_API_URL}/register`, { name, email, password });
-        // Después de registrar, podrías automáticamente loguear al usuario
-        // o redirigirlo a la página de login
-        return response.data; // Retorna la respuesta del registro
+        const response = await axios.post(`${AUTH_API_URL}/login/client/`, { email, password });
+
+        // En respuesta recibes client_id y email, sin token
+        const { client_id, email } = response.data;
+        const user = { client_id, email };
+
+        this.user = user;
+        this.isAuthenticated = true;
+        localStorage.setItem('user', JSON.stringify(user));
+
+        return true;
       } catch (error) {
+        this.logout();
         throw error;
       }
     },
 
     logout() {
       this.user = null;
-      this.token = null;
       this.isAuthenticated = false;
       localStorage.removeItem('user');
-      localStorage.removeItem('token');
-      // Limpia el token de los headers de Axios
-      delete axios.defaults.headers.common['Authorization'];
     },
 
-    // Acción para inicializar el estado de autenticación al cargar la app
     initializeAuth() {
-      if (this.token) {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
-      }
-    }
+      // No hay token, no se configuran cabeceras
+    },
   },
 });

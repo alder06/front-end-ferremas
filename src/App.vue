@@ -3,24 +3,37 @@
     <!-- Navbar -->
     <Navbar />
 
-    <!-- Botones y enlaces, envueltos en un div para estructura -->
+    <!-- Botones condicionales según el tipo de usuario -->
     <div class="my-3">
-      <router-link to="/usuarios" class="btn btn-outline-primary me-2">Usuarios</router-link>
-      <router-link to="/compra" class="btn btn-outline-success">
-        Simular Compra <span class="badge bg-secondary">{{ cartStore.cartTotalUnits }}</span>
+      <!-- FUNCIONARIO: Usuarios + Pedidos -->
+      <template v-if="esFuncionario">
+        <router-link to="/usuarios" class="btn btn-outline-primary me-2">
+          Usuarios
+        </router-link>
+        <router-link to="/pedidos" class="btn btn-outline-warning me-2">
+          Pedidos
+        </router-link>
+      </template>
+
+      <!-- CLIENTE: Simular Compra -->
+      <router-link
+        v-if="esCliente"
+        to="/compra"
+        class="btn btn-outline-success"
+      >
+        Simular Compra
+        <span class="badge bg-secondary">{{ cartStore.cartTotalUnits }}</span>
       </router-link>
 
+      <!-- Botón Cerrar Sesión: para ambos -->
       <template v-if="authStore.isAuthenticated">
-        <router-link to="/usuarios" class="btn btn-outline-primary me-2">Usuarios</router-link>
-        <button @click="handleLogout" class="btn btn-outline-danger">Cerrar Sesión</button>
-      </template>
-      <template v-else>
-        <router-link to="/login" class="btn btn-outline-success">Iniciar Sesión</router-link>
-        <router-link to="/registrar" class="btn btn-outline-info">Registrarse</router-link>
+        <button @click="handleLogout" class="btn btn-outline-danger ms-2">
+          Cerrar Sesión
+        </button>
       </template>
     </div>
 
-    <!-- Aquí va el contenido de la ruta activa -->
+    <!-- Contenido dinámico -->
     <router-view />
   </div>
 </template>
@@ -30,10 +43,14 @@ import Navbar from './components/Navbar.vue'
 import { useCartStore } from './services/cart'
 import { useAuthStore } from './services/auth'
 import { useRouter } from 'vue-router'
+import { computed } from 'vue'
 
 const cartStore = useCartStore()
 const authStore = useAuthStore()
 const router = useRouter()
+
+const esFuncionario = computed(() => authStore.user?.rol === 1)
+const esCliente = computed(() => authStore.user?.rol === 2)
 
 const handleLogout = () => {
   authStore.logout()

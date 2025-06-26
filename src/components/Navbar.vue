@@ -1,10 +1,10 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
     <div class="container-fluid">
-      <!-- Logo o marca -->
-      <router-link class="navbar-brand fw-bold" to="/">FerreMas</router-link>
+      <!-- Logo -->
+      <router-link class="navbar-brand fw-bold" to="/">Ferremas</router-link>
 
-      <!-- Botón hamburguesa para móvil -->
+      <!-- Botón hamburguesa -->
       <button
         class="navbar-toggler"
         type="button"
@@ -17,24 +17,16 @@
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <!-- Menú colapsable -->
+      <!-- Menú -->
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <router-link class="nav-link" to="/">Inicio</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link" to="/productos">Productos</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link" to="/categorias">Categorías</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link" to="/contacto">Contacto</router-link>
-          </li>
+          <li class="nav-item"><router-link class="nav-link" to="/">Inicio</router-link></li>
+          <li class="nav-item"><router-link class="nav-link" to="/productos">Productos</router-link></li>
+          <li class="nav-item"><router-link class="nav-link" to="/categorias">Categorías</router-link></li>
+          <li class="nav-item"><router-link class="nav-link" to="/contacto">Contacto</router-link></li>
         </ul>
 
-        <!-- Barra de búsqueda -->
+        <!-- Búsqueda -->
         <form class="d-flex me-3" @submit.prevent="buscar">
           <input
             class="form-control me-2"
@@ -46,8 +38,8 @@
           <button class="btn btn-outline-success" type="submit">Buscar</button>
         </form>
 
-        <!-- Icono carrito -->
-        <router-link class="btn btn-outline-primary position-relative me-3" to="/carrito" aria-label="Carrito de compras">
+        <!-- Carrito -->
+        <router-link class="btn btn-outline-primary position-relative me-3" to="/carrito" aria-label="Carrito">
           🛒
           <span
             v-if="cartTotalUnits > 0"
@@ -57,25 +49,16 @@
           </span>
         </router-link>
 
-        <!-- Login o cuenta -->
-        <div>
-          <router-link
-            v-if="isAuth"
-            to="/cuenta"
-            class="btn btn-outline-secondary"
-          >
-            Mi Cuenta
-            <button
-            v-if="isAuth"
-            @click="handleLogout"
-            class="btn btn-outline-danger"
-          >
-            Cerrar Sesión
-          </button>
-          </router-link>
+        <!-- Autenticación -->
+        <div class="d-flex align-items-center">
+          <template v-if="isAuth">
+            <router-link to="/cuenta" class="btn btn-outline-secondary me-2">Mi Cuenta</router-link>
+            <button @click="handleLogout" class="btn btn-outline-danger">Cerrar Sesión</button>
+          </template>
 
           <template v-else>
-            <router-link to="/login" class="btn btn-outline-success">Iniciar Sesión</router-link>
+            <router-link to="/login-funcionario" class="btn btn-outline-success me-2">Ingreso Funcionarios</router-link>
+            <router-link to="/login-cliente" class="btn btn-outline-primary me-2">Ingreso Clientes</router-link>
             <router-link to="/registrar" class="btn btn-outline-info">Registrarse</router-link>
           </template>
         </div>
@@ -87,15 +70,23 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useCartStore } from '@/services/cart'
+import { useAuthStore } from '@/services/auth'
+import { useRouter } from 'vue-router'
 
-// Estado carrito
+// Store
 const cart = useCartStore()
 const cartTotalUnits = computed(() => cart.cartTotalUnits)
+const authStore = useAuthStore()
+const router = useRouter()
 
-// Simulación de autenticación (reemplaza con store real)
-const isAuth = ref(false)
+const isAuth = computed(() => authStore.isAuthenticated)
 
-// Búsqueda (simple)
+const handleLogout = () => {
+  authStore.logout()
+  router.push('/') // o redirige a login-funcionario si prefieres
+}
+
+// Búsqueda
 const searchQuery = ref('')
 const buscar = () => {
   alert(`Buscando: ${searchQuery.value}`)
@@ -103,7 +94,6 @@ const buscar = () => {
 </script>
 
 <style scoped>
-/* Ajuste para que el badge del carrito quede bien */
 .btn.position-relative {
   padding-right: 2rem;
 }

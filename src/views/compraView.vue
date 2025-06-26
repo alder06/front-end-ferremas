@@ -39,6 +39,7 @@
 import { ref } from 'vue'
 import { useCartStore } from '@/services/cart'
 import axios from 'axios'
+import { getOrCreateCartId } from '@/composables/useCartId'
 
 const cart = useCartStore()
 const loading = ref(false)
@@ -46,15 +47,17 @@ const loading = ref(false)
 const startWebpay = async () => {
   loading.value = true
   try {
-    const { data } = await axios.post('/api/payments/create-webpay-transaction', {
-      items: cart.items
+    const cartId = await getOrCreateCartId()
+    const { data } = await axios.post('http://localhost:3000/api/payments/pay', {
+      cartId
     })
-    // Transbank devuelve { url, token }
-    window.location.href = data.url // Redirige al host de Webpay
+    window.location.href = data.url
   } catch (err) {
     console.error(err)
     alert('Error al iniciar Webpay')
+  } finally {
     loading.value = false
   }
 }
 </script>
+
