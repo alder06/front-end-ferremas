@@ -19,7 +19,7 @@ export const useCartStore = defineStore('cart', {
       return state.items.reduce((total, item) => total + (item.precio * item.cantidad), 0);
     },
   },
-  actions: {
+  actions: {  
     /**
      * Agrega un producto al carrito o incrementa su cantidad si ya existe.
      * @param {Object} product - El objeto del producto a agregar (debe tener id, nombre, precio).

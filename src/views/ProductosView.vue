@@ -1,126 +1,69 @@
 <template>
-  <div class="productos-page">
-    <h1>Productos de FerreMas</h1>
+  <div class="container mt-4">
+    <h2 class="mb-3">Listado de Productos</h2>
 
-    <div v-if="loading">
-      <p>Cargando productos...</p>
+    <div v-if="!loading && products.length === 0" class="alert alert-warning">
+      No hay productos disponibles.
     </div>
 
-    <div v-else-if="error">
-      <p>Error al cargar los productos: {{ error }}</p>
-    </div>
-
-    <div v-else class="productos-grid">
-      <div v-for="producto in productos" :key="producto.id" class="producto-card">
-        <img :src="producto.imagen" :alt="producto.nombre" class="producto-imagen">
-        <h3>{{ producto.nombre }}</h3>
-        <p class="producto-descripcion">{{ producto.descripcion }}</p>
-        <p class="producto-precio">Precio: ${{ producto.precio }}</p>
-        <button @click="addToCart(producto)" class="producto-boton">Agregar al carrito</button>
+    <div class="row">
+      <div
+        v-for="product in products"
+        :key="product.id"
+        class="col-md-4 mb-3"
+      >
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="card-text">{{ product.description }}</p>
+            <p><strong>Precio:</strong> ${{ product.price }}</p>
+            <button @click="addToCart(product)" class="btn btn-primary w-100 mt-2">
+              🛒 Añadir al carrito
+            </button>
+          </div>
+        </div>
       </div>
     </div>
+
+    <div v-if="loading" class="text-center">Cargando productos...</div>
+    <div v-if="error" class="alert alert-danger">{{ error }}</div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import productService from '@/services/productService';
 import axios from 'axios';
-import { useCartStore } from '../services/cart'; // Importa tu store de Pinia
+import { getOrCreateCartId } from '@/composables/useCartId';
 
-// Inicializa el store
-const cartStore = useCartStore();
-
-const productos = ref([]);
+const products = ref([]);
 const loading = ref(true);
 const error = ref(null);
 
-async function cargarProductos() {
-  loading.value = true;
-  error.value = null;
+onMounted(async () => {
   try {
-    const response = await axios.get(''); // ¡Actualiza tu URL!
-    productos.value = response.data;
+    const result = await productService.getAll();
+    products.value = result;
   } catch (err) {
-    error.value = err.message || 'Error desconocido al cargar productos';
+    console.error('Error al cargar productos:', err);
+    error.value = 'Error al cargar los productos.';
   } finally {
     loading.value = false;
   }
-}
-
-function addToCart(producto) {
-  cartStore.addItem(producto); // Llama a la acción addItem del store
-  alert(`"${producto.nombre}" agregado al carrito. Cantidad total en carrito: ${cartStore.cartTotalUnits}`);
-}
-
-onMounted(() => {
-  cartStore.loadCartFromLocalStorage(); // Carga el carrito al iniciar la app/componente
-  cargarProductos();
 });
+
+const addToCart = async (product) => {
+  try {
+    const cartId = await getOrCreateCartId()
+    await axios.post(`http://localhost:3000/api/cart/${cartId}/items`, {
+      product_id: product.id,
+      quantity: 1
+    })
+    alert('Producto agregado al carrito.')
+  } catch (err) {
+    console.error('Error agregando al carrito:', err)
+    alert('Error al agregar producto')
+  }
+}
+
 </script>
-
-<style scoped>
-/* Tus estilos existentes para productos */
-.productos-page {
-  font-family: 'Arial', sans-serif;
-  color: #333;
-  padding: 20px;
-}
-
-.productos-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-}
-
-.producto-card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 15px;
-  text-align: center;
-  transition: transform 0.3s ease;
-}
-
-.producto-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.producto-imagen {
-  max-width: 100%;
-  height: auto;
-  margin-bottom: 10px;
-  border-radius: 5px;
-}
-
-.producto-nombre {
-  font-size: 1.2em;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.producto-descripcion {
-  font-size: 0.9em;
-  color: #666;
-  margin-bottom: 10px;
-}
-
-.producto-precio {
-  font-size: 1.1em;
-  color: #007bff;
-  font-weight: bold;
-}
-
-.producto-boton {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.producto-boton:hover {
-  background-color: #218838;
-}
-</style>
